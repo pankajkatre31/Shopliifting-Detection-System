@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🛒 AI-Powered Shoplifting Detection System
 
  
