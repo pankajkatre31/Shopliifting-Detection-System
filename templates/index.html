@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopSecure AI</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1000/1000120.png" type="image/png">
+  <style>
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    .status-active { background-color: #10b981; }
+    .status-inactive { background-color: #ef4444; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <header class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+      <h1 class="text-2xl font-bold text-blue-700">🛡️ ShopSecure AI</h1>
+      <div class="flex items-center space-x-4">
+        <div class="mb-1">⏱️ Uptime: <span id="uptime">00:00:00</span></div>
+        <div>🎯 Confidence: <span id="avgConfidence">0%</span></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let startTime = Date.now();
+    let isRecording = false;
+    let detectionCount = 0;
+
+    // Update live stats
+    function updateStats() {
+      // Update uptime
+      const uptime = Date.now() - startTime;
+      const hours = Math.floor(uptime / 3600000);
+      const minutes = Math.floor((uptime % 3600000) / 60000);
+      const seconds = Math.floor((uptime % 60000) / 1000);
+      document.getElementById('uptime').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Toggle fullscreen
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Toggle recording
+    document.getElementById('recordBtn').addEventListener('click', function() {
+      isRecording = !isRecording;
+      this.textContent = isRecording ? '⏹️ Stop' : '🔴 Record';
+      this.className = isRecording ? 
+        'bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm' :
+        'bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm';
+    });
+
+    // Simulate alert detection
+    function simulateAlert() {
+      const alertBanner = document.getElementById('alertBanner');
+      const alertText = document.getElementById('alertText');
+      
+      const alerts = [
+        'Suspicious Activity Detected!',
+        'Person Loitering Detected!',
+        'Unusual Movement Pattern!',
+        'Potential Shoplifting Activity!'
+      ];
+      
+      alertText.textContent = alerts[Math.floor(Math.random() * alerts.length)];
+      alertBanner.classList.remove('hidden');
+      
+      setTimeout(() => {
+        alertBanner.classList.add('hidden');
+      }, 5000);
+      
+      detectionCount++;
+      document.getElementById('detectionCount').textContent = detectionCount;
+    }
+
+    // Fetch detections and update stats
+    async function fetchLiveStats() {
+      try {
+        const response = await fetch('/api/detections');
+        const data = await response.json();
+        
+        if (data.detections) {
+          document.getElementById('detectionCount').textContent = data.detections.length;
+          
+          if (data.detections.length > 0) {
+            const avgConf = data.detections.reduce((sum, d) => sum + d.confidence, 0) / data.detections.length;
+            document.getElementById('avgConfidence').textContent = `${(avgConf * 100).toFixed(1)}%`;
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching live stats:', error);
+      }
+    }
+
+    // Video error handling
+    document.getElementById('videoStream').onerror = function() {
+      setTimeout(() => { this.src = this.src; }, 2000);
+    };
+
+    // Initialize
+    setInterval(updateStats, 1000);
+    setInterval(fetchLiveStats, 5000);
+    setInterval(simulateAlert, 15000); // Simulate alerts every 15 seconds for demo
+
+     document.addEventListener('keydown', function(e) {
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'r' || e.key === 'R') {
+        document.getElementById('recordBtn').click();
+      }
+    });
+  </script>
+
+</body>
+</html>

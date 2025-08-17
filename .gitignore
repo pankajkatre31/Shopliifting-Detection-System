@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Virtual environment
+venv/ # This directory is present in your structure
+env/  # Common alternative name for virtual environments
+pyvenv.cfg # This file is present inside your venv directory
+
+
+# Database file
+data/detections.db # This file is present in your data directory
+
+# Log files
+*.log # Your project generates 'shoplifting_detection.log'
+
+# Machine Learning model files
+model.h5 # This file is present in your root directory
+*.pkl    # Common extension for pickled Python objects (if you use them)
+
+# OS generated files
+.DS_Store    # Mac OS generated files
+Thumbs.db    # Windows thumbnail cache files
+.ipynb_checkpoints/ # Jupyter notebooks checkpoints
+
+# Python specific IDE/editor files
+.vscode/     # VS Code specific settings (if you use VS Code)
+.idea/       # IntelliJ/PyCharm specific settings
+
+# Pyenv specific files (if you manage Python versions with pyenv)
+.python-version
+pyvenv.cfg # This file is present inside your venv directory
+
+ 
+*.tmp
+*.temp
+*.swp
+*~
